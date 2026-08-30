@@ -212,6 +212,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (nightSlotsInput) {
         nightSlotsInput.addEventListener('change', () => generateSchedule());
     }
+    const nightCapInput = document.getElementById('inputNightCap');
+    if (nightCapInput) {
+        nightCapInput.addEventListener('change', () => generateSchedule());
+    }
 
     const defaultSlotsInput = document.getElementById('inputDefaultSlots');
     if (defaultSlotsInput) {
@@ -1008,6 +1012,8 @@ function parseUIConfig() {
         afternoonSlots = 1;
         nightSlots = 1;
     }
+    // Hard cap on Night shifts per doctor (0 = unlimited). Shift-Based Mode only.
+    const nightCap = Math.max(0, parseInt(document.getElementById('inputNightCap')?.value) || 0);
 
     const chkSoftAlternate = document.getElementById('chkSoftAlternate')?.checked ?? true;
     const selectAlternateStrength = document.getElementById('selectAlternateStrength')?.value || 'medium';
@@ -1429,7 +1435,7 @@ function parseUIConfig() {
         offDutyPeriod, preventLongGaps, balanceShifts, allowBlankDays,
         getRoleSlotsForDay, areConflicting, specialHols,
         chkSoftAlternate, selectAlternateStrength, windowPenalty, pairPenalty,
-        isShiftBased, morningSlots, afternoonSlots, nightSlots
+        isShiftBased, morningSlots, afternoonSlots, nightSlots, nightCap
     };
 
     // Warning: With 2 slots but only 2 doctors, the same pair is forced to repeat
@@ -1591,7 +1597,7 @@ function generateSingleScheduleCandidate(randomness = 0, formatUI = false, confi
         useSpecialRule, specialDocs, specialRuleDays,
         offDutyPeriod, preventLongGaps, balanceShifts, allowBlankDays,
         getRoleSlotsForDay, areConflicting, month, year, specialHols,
-        isShiftBased, morningSlots, afternoonSlots, nightSlots
+        isShiftBased, morningSlots, afternoonSlots, nightSlots, nightCap = 0
     } = config;
 
     const wCounts = {}; const hCounts = {}; const tCounts = {}; const lastShift = {};
@@ -1737,6 +1743,10 @@ function generateSingleScheduleCandidate(randomness = 0, formatUI = false, confi
             return false;
         };
 
+        // Hard night cap: never assign a Night slot to a doctor already at the cap (applies at every cascade level)
+        const isNightCapped = (doc, slotIdx) =>
+            isShiftBased && nightCap > 0 && slotIdx >= morningSlots + afternoonSlots && nCounts[doc] >= nightCap;
+
         const isBlockedByNightToMorning = (doc, slotIdx) => {
             if (isShiftBased && slotIdx < morningSlots && day > 1) {
                 const prevDayDocs = scheduleMap[day - 1] || [];
@@ -1779,7 +1789,7 @@ function generateSingleScheduleCandidate(randomness = 0, formatUI = false, confi
                         const qVal = quota[key];
                         if (tCounts[doc] >= qVal) return false;
                     }
-                    if (isBlockedByOffRequest(doc, 0) || isBlockedByNightToMorning(doc, 0)) return false;
+                    if (isBlockedByOffRequest(doc, 0) || isBlockedByNightToMorning(doc, 0) || isNightCapped(doc, 0)) return false;
                     return true;
                 });
 
@@ -1816,6 +1826,7 @@ function generateSingleScheduleCandidate(randomness = 0, formatUI = false, confi
                             const qVal = quota[key];
                             if (tCounts[doc] >= qVal) return false;
                         }
+                        if (isNightCapped(doc, i)) return false;
                         return true;
                     });
                     let availableDocs = [];
@@ -3920,7 +3931,8 @@ window.exportConfigJSON = function () {
             selectAlternateStrength: document.getElementById('selectAlternateStrength')?.value || 'medium',
             inputMorningSlots: document.getElementById('inputMorningSlots')?.value || '1',
             inputAfternoonSlots: document.getElementById('inputAfternoonSlots')?.value || '1',
-            inputNightSlots: document.getElementById('inputNightSlots')?.value || '1'
+            inputNightSlots: document.getElementById('inputNightSlots')?.value || '1',
+            inputNightCap: document.getElementById('inputNightCap')?.value || '0'
         },
         checkboxes: {
             chkCustomDateRange: document.getElementById('chkCustomDateRange')?.checked || false,
@@ -4048,6 +4060,10 @@ window.importConfigJSON = function (event) {
             const inputNightSlotsEl = document.getElementById('inputNightSlots');
             if (inputNightSlotsEl && (!config.inputs || !config.inputs.hasOwnProperty('inputNightSlots'))) {
                 inputNightSlotsEl.value = '1';
+            }
+            const inputNightCapEl = document.getElementById('inputNightCap');
+            if (inputNightCapEl && (!config.inputs || !config.inputs.hasOwnProperty('inputNightCap'))) {
+                inputNightCapEl.value = '0';
             }
 
             // Explicitly trigger the custom date range toggle logic

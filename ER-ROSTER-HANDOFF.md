@@ -15,5 +15,5 @@ Fork ของ PleumA/PleumA.github.io (ตารางเวรแพทย์ 
 ## STATUS (30 ส.ค. 2026)
 - ✅ patch `inputNightCap` = เวรดึกสูงสุดต่อคน (0 = ไม่จำกัด) hard filter ทุก cascade level + save/load JSON + TH/EN + 3 tests — ทั้งชุด 22 suites ผ่าน — push แล้ว
 - ⏳ ยังไม่เปิด GitHub Pages ของ fork (mike กดเองที่ Settings → Pages → branch main) · ใช้ local ผ่าน `npx serve .` ได้เลย
-- ⏳ ยังไม่ได้ลองกับข้อมูลจริงของแผนก (จำนวนคน/role/quota)
+- ⏳ ยังไม่ได้ลองกับข้อมูลจริง — รอ mike ให้: รายชื่อ+role, คนต่อกะ, เดือน+วัน off, cap เวรดึก/quota/conflict (หรือ Excel เดือนก่อน) · รัน local: `python3 -m http.server 3000` (npx serve ไม่ขึ้นบนเครื่องนี้)
 - idea ถัดไป: วันไม่ว่างซ้ำทุกสัปดาห์ต่อคน (OPD/สอน), max วันติดกัน

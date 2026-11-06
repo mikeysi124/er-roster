@@ -8,6 +8,7 @@ Fork ของ PleumA/PleumA.github.io (ตารางเวรแพทย์ 
 - ใช้งานจริงให้ติ๊ก **Allow Blank Days = ON** เสมอ — ไม่งั้น cascade ระดับ 4–5 จะทับ off request เงียบๆ
 - ข้อมูลอยู่ใน localStorage/JSON บนเครื่องเท่านั้น ห้ามเพิ่ม backend ที่ส่งชื่อ/วันลาออกนอกเครื่อง
 - แก้ solver ต้องมีเทสต์ใน `tests/*.test.js` (harness = eval app.js + mock DOM ดู `tests/nightCap.test.js`)
+- SheetJS โหลด 0.18.5 จาก cdnjs ที่ `index.html` กับ `sw.js` ใช้ export อย่างเดียว ถ้าจะเพิ่มนำเข้า Excel ให้เปลี่ยนเป็น 0.20.2 ขึ้นไปจาก cdn.sheetjs.com ก่อน รุ่นเดิมโดน CVE-2023-30533 ตอนอ่านไฟล์ · ที่มา [[2026-11-06-buu-ai-workshop-design-card-html-data-app]] ใน vault
 
 ## การตัดสินใจ
 - 30 ส.ค. 2026: เลือก fork+patch แทนเขียนใหม่/OR-Tools เพราะกะ 8 ชม. ตรงกับ Shift-Based Mode เดิม ขาดแค่ cap เวรดึก

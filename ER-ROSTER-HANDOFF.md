@@ -12,6 +12,7 @@ Fork ของ PleumA/PleumA.github.io (ตารางเวรแพทย์ 
 
 ## การตัดสินใจ
 - 30 ส.ค. 2026: เลือก fork+patch แทนเขียนใหม่/OR-Tools เพราะกะ 8 ชม. ตรงกับ Shift-Based Mode เดิม ขาดแค่ cap เวรดึก
+- 11 พ.ย. 2026: mike ok คง fork ไว้ก่อน ย้ายฐานไป PleumA/doctor-scheduler พร้อมรอบที่มีข้อมูลเวรจริงมาลอง · ทางที่ไม่เลือก ย้ายฐานทันที กับเลิก fork ใช้เว็บต้นทาง
 
 ## STATUS
 
@@ -20,7 +21,7 @@ Fork ของ PleumA/PleumA.github.io (ตารางเวรแพทย์ 
 - ต้นทางยังไม่มี cap เวรดึกต่อคน มีแต่ขั้นต่ำเวรต่อคน ค่าเริ่มต้น 14 · โหมดกะคู่กับ role ยังใช้ตัวจัดเวรเดิม
 - ลอง cherry-pick `b93a86d` ลง `00d6a91` ใน scratch clone ชน `app.js` 5 จุด `translations.js` และ `dist/output.css` ต้องเขียน cap ใหม่ ไม่ใช่ย้ายแพตช์
 - รายละเอียดกับหลักฐานอยู่โน้ต `2026-11-11-pleuma-doctor-scheduler-v2` ใน vault
-- [ ] mike เคาะเวลาย้ายฐานไป `PleumA/doctor-scheduler` · agent แนะนำย้ายพร้อมรอบที่มีข้อมูลเวรจริง · ขั้นตอนเมื่อย้าย branch แยก เปลี่ยน remote `upstream` เขียน cap เวรดึกใหม่ที่ตัวกรอง Hard Quota Ceiling ตั้งขั้นต่ำเวรเป็น 0 แล้วรันเทสต์ทั้งชุด
+- [ ] ย้ายฐานไป `PleumA/doctor-scheduler` ในรอบเดียวกับที่ mike ส่งข้อมูลเวรจริง mike ok 11 พ.ย. 2026 · ขั้นตอนเมื่อย้าย branch แยก เปลี่ยน remote `upstream` เขียน cap เวรดึกใหม่ที่ตัวกรอง Hard Quota Ceiling ตั้งขั้นต่ำเวรเป็น 0 แล้วรันเทสต์ทั้งชุด
 - [ ] mike ส่งข้อมูลจริงมาลอง รายชื่อกับ role คนต่อกะ เดือนกับวัน off cap เวรดึก quota conflict หรือ Excel เดือนก่อน · รัน local ด้วย `python3 -m http.server 3000` เพราะ npx serve ไม่ขึ้นบนเครื่องนี้
 - [ ] mike เปิด GitHub Pages ของ fork ที่ Settings → Pages → branch main ถ้าจะใช้ผ่านเว็บ
 

@@ -184,6 +184,23 @@ async function runTest(name, testFn) {
         assert.strictEqual(blanks, 0, `expected 0 blank nights, got ${blanks}`);
     });
 
-    console.log(`\nnightCap: PASSED: ${passed}, FAILED: ${3 - passed}`);
-    if (passed < 3) process.exit(1);
+    // TEST 4: special-duty doctor whose role lands on the Night slot must still respect the cap
+    await runTest("TEST 4: Night cap holds for special-duty doctor in role mode", async () => {
+        resetMocks();
+        global.doctors = ["A", "B", "C", "X", "Y"];
+        mockDOM['chkShiftBased'].checked = true;
+        mockDOM['chkAllowBlankDays'].checked = true;
+        mockDOM['chkRoleBased'].checked = true;
+        mockDOM['inputDoctorRoles'].value = 'A:R1, B:R1, C:R1, X:R2, Y:R2';
+        mockDOM['inputDefaultRoleSlots'].value = 'R1:1, R2:1'; // 3 shifts → R1 morning, R1 afternoon, R2 night
+        mockDOM['chkUseSpecialRule'].checked = true;
+        mockDOM['inputSpecialDays'].value = '31';
+        mockDOM['inputSpecialDocs'].value = 'X';
+        mockDOM['inputNightCap'].value = '1';
+        await window.generateSchedule();
+        for (const doc of doctors) assert.ok(nightCountOf(doc) <= 1, `${doc} has ${nightCountOf(doc)} nights > cap 1`);
+    });
+
+    console.log(`\nnightCap: PASSED: ${passed}, FAILED: ${4 - passed}`);
+    if (passed < 4) process.exit(1);
 })();

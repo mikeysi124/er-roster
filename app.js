@@ -1789,7 +1789,9 @@ function generateSingleScheduleCandidate(randomness = 0, formatUI = false, confi
                         const qVal = quota[key];
                         if (tCounts[doc] >= qVal) return false;
                     }
-                    if (isBlockedByOffRequest(doc, 0) || isBlockedByNightToMorning(doc, 0) || isNightCapped(doc, 0)) return false;
+                    // Night cap must use the slot this doctor will take (first slot of their role); slot 0 let a Night-role special doctor bypass it
+                    const slotIdx = Math.max(0, daySlotsList.indexOf(doctorRoles[doc] || 'Default'));
+                    if (isBlockedByOffRequest(doc, 0) || isBlockedByNightToMorning(doc, 0) || isNightCapped(doc, slotIdx)) return false;
                     return true;
                 });
 

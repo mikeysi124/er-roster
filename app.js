@@ -1789,9 +1789,10 @@ function generateSingleScheduleCandidate(randomness = 0, formatUI = false, confi
                         const qVal = quota[key];
                         if (tCounts[doc] >= qVal) return false;
                     }
-                    // Night cap must use the slot this doctor will take (first slot of their role); slot 0 let a Night-role special doctor bypass it
+                    // Night cap and the day-before-off rule must use the slot this doctor will take (first slot of their role); slot 0 let a Night-role special doctor bypass both
+                    // Night-to-morning stays at slot 0 on purpose: moving it lets a Night-role special doctor work every night of the lock period
                     const slotIdx = Math.max(0, daySlotsList.indexOf(doctorRoles[doc] || 'Default'));
-                    if (isBlockedByOffRequest(doc, 0) || isBlockedByNightToMorning(doc, 0) || isNightCapped(doc, slotIdx)) return false;
+                    if (isBlockedByOffRequest(doc, slotIdx) || isBlockedByNightToMorning(doc, 0) || isNightCapped(doc, slotIdx)) return false;
                     return true;
                 });
 

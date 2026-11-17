@@ -535,6 +535,38 @@ async function runTests() {
         failed++;
     }
 
+    // TEST 10: special-duty doctor whose role lands on the Night slot must not work the night before a requested day off
+    try {
+        resetMocks();
+        const el = (id) => document.getElementById(id);
+        global.doctors = ['A', 'B', 'C', 'X', 'Y'];
+        el('chkShiftBased').checked = true;
+        el('inputMorningSlots').value = '1';
+        el('inputAfternoonSlots').value = '1';
+        el('inputNightSlots').value = '1';
+        el('inputNightCap').value = '0';
+        el('chkAllowBlankDays').checked = true;
+        el('chkRoleBased').checked = true;
+        el('inputDoctorRoles').value = 'A:R1, B:R1, C:R1, X:R2, Y:R2';
+        el('inputDefaultRoleSlots').value = 'R1:1, R2:1'; // 3 shifts → R1 morning, R1 afternoon, R2 night
+        el('chkUseSpecialRule').checked = true;
+        el('inputSpecialDays').value = '31';
+        el('inputSpecialDocs').value = 'X';
+        const offDays = [4, 8, 12, 16, 20, 24, 28];
+        global.offData = [{ id: 1, date: offDays.join(', '), names: 'X' }];
+
+        await window.generateSchedule();
+
+        const nightBeforeOff = offDays.filter(d => globalResult.schedule[d - 2].selectedDocs.slice(-1)[0].name === 'X');
+        assert.deepStrictEqual(nightBeforeOff, [], `X works the night before off days ${nightBeforeOff.join(', ')}`);
+
+        console.log("✅ TEST 10 PASSED: SPECIAL NIGHT-ROLE DOCTOR SKIPS THE NIGHT BEFORE A DAY OFF");
+        passed++;
+    } catch (e) {
+        console.log("❌ TEST 10 FAILED:", e.stack);
+        failed++;
+    }
+
     console.log(`\nlockSpecialDuty: PASSED: ${passed}, FAILED: ${failed}`);
     if (failed > 0) {
         process.exit(1);

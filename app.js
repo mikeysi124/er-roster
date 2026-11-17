@@ -1802,6 +1802,11 @@ function generateSingleScheduleCandidate(randomness = 0, formatUI = false, confi
                 }
             }
 
+            // The special doctor is placed later at their role's first slot, so doctors picked for earlier slots must not conflict with them
+            const reservedSpecial = chosenSpecial && daySlotsList.includes(specialRole) ? chosenSpecial : null;
+            const conflictsWithToday = (doc) => chosenToday.some(otherDoc => areConflicting(doc, otherDoc)) ||
+                (reservedSpecial !== null && !specialDoctorAssigned && areConflicting(doc, reservedSpecial));
+
             for (let i = 0; i < slotsPerDay; i++) {
                 const reqRole = daySlotsList[i];
                 if (chosenSpecial && specialRole === reqRole && !specialDoctorAssigned) {
@@ -1848,7 +1853,7 @@ function generateSingleScheduleCandidate(randomness = 0, formatUI = false, confi
                             }
                         }
                         if (isHoliday && holidaySet.has(day - 1) && (scheduleMap[day - 1] || []).includes(doc)) return false;
-                        if (chosenToday.some(otherDoc => areConflicting(doc, otherDoc))) return false;
+                        if (conflictsWithToday(doc)) return false;
                         if (chosenSpecial && specialDocs.includes(doc) && doc !== chosenSpecial) return false;
                         return true;
                     });
@@ -1859,7 +1864,7 @@ function generateSingleScheduleCandidate(randomness = 0, formatUI = false, confi
                         availableDocs = roleDocs.filter(doc => {
                             if (chosenToday.includes(doc)) return false;
                             if (isBlockedByOffRequest(doc, i) || isBlockedByNightToMorning(doc, i)) return false;
-                            if (chosenToday.some(otherDoc => areConflicting(doc, otherDoc))) return false;
+                            if (conflictsWithToday(doc)) return false;
                             if (chosenSpecial && specialDocs.includes(doc) && doc !== chosenSpecial) return false;
                             return true;
                         });
